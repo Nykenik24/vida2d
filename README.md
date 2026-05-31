@@ -18,34 +18,33 @@ Then, use the generated library in `lib/`, or try out the examples at `bin/`.
 ### Example
 
 ```c
-#include "vida2d.h"
-#include "vida2d/render.h"
-#include "vida2d/vec.h"
+#include "vida2d.hpp"
+#include "vida2d/color.hpp"
+#include "vida2d/render.hpp"
+#include "vida2d/vec.hpp"
 
 int main(void) {
-  if (!vida2d_init("test", 800, 600))
-    return 1;
+  Vida2D::Context::Init("test", 800, 600);
 
-  while (vida2d_running()) {
-    vida2d_poll_events();
-    vida2d_clear();
+  Vida2D::Vector2 first_pos(25, 25);
+  Vida2D::Vector2 size(50, 50);
 
-    vida2d_vec2_t first_pos = vida2d_vec2(25, 25);
-    vida2d_set_color(vida2d_red);
-    vida2d_draw_rect(V2D_DRAW_FILLED, vida2d_vec2(25, 25), vida2d_vec2(50, 50));
+  Vida2D::Render::SetBackgroundColor(Vida2D::Color(20, 20, 20, 255));
 
-    vida2d_set_color(vida2d_green);
-    vida2d_draw_rect(V2D_DRAW_FILLED, vida2d_vec_transformx(first_pos, 75),
-                     vida2d_vec2(50, 50));
+  while (Vida2D::Running()) {
+    Vida2D::PollEvents();
+    Vida2D::ClearScreen();
 
-    vida2d_set_color(vida2d_blue);
-    vida2d_draw_rect(V2D_DRAW_FILLED, vida2d_vec_transformx(first_pos, 75 * 2),
-                     vida2d_vec2(50, 50));
+    Vida2D::Render::SetColor(Vida2D::Red);
+    Vida2D::Render::RectFill(first_pos, size);
 
-    vida2d_present();
+    Vida2D::Render::SetColor(Vida2D::Blue);
+    Vida2D::Render::RectFill(first_pos.TranslatedX(75), size);
+
+    Vida2D::Render::SetColor(Vida2D::Green);
+    Vida2D::Render::RectFill(first_pos.TranslatedX(75 * 2), size);
+
+    Vida2D::Update();
   }
-
-  vida2d_close();
-  return 0;
 }
 ```
