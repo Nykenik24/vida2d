@@ -84,7 +84,6 @@ inline void Context::SetRunning(bool running) { this->running = running; }
 inline SDL_Renderer *Context::GetRenderer() const { return renderer; }
 inline SDL_Window *Context::GetWindow() const { return window; }
 
-bool Update();
 bool ClearScreen();
 void PollEvents();
 

@@ -19,5 +19,7 @@ bool CircleFill(Vector2 center, float radius);
 
 bool SetColor(Color color);
 void SetBackgroundColor(Color color);
+
+bool Update();
 } // namespace Render
 } // namespace Vida2D

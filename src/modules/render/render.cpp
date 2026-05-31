@@ -114,5 +114,10 @@ bool SetColor(Color color) {
 void SetBackgroundColor(Color color) {
   Context::GetInstance().SetClearColor(color);
 }
+
+bool Update() {
+  auto &ctx = Context::GetInstance();
+  return SDL_RenderPresent(ctx.GetRenderer());
+}
 } // namespace Render
 } // namespace Vida2D

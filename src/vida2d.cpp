@@ -6,11 +6,6 @@ namespace Vida2D {
 Context *Context::instance = nullptr;
 std::mutex Context::mtx;
 
-bool Update() {
-  auto &ctx = Context::GetInstance();
-  return SDL_RenderPresent(ctx.GetRenderer());
-}
-
 bool ClearScreen() {
   auto &ctx = Context::GetInstance();
   auto color = ctx.GetClearColor();
