@@ -52,6 +52,15 @@ public:
   Text &operator=(Text &&) noexcept;
 
   bool SetString(const std::string &str);
+  template <typename... Args> bool SetStringF(const char *fmt, Args &&...args) {
+    int size = std::snprintf(nullptr, 0, fmt, std::forward<Args>(args)...);
+    if (size < 0)
+      return false;
+    std::string buf(size + 1, '\0');
+    std::snprintf(buf.data(), buf.size(), fmt, std::forward<Args>(args)...);
+    buf.resize(size);
+    return SetString(buf);
+  }
   bool Draw(Vector2 pos);
   bool Valid() const { return text_obj != nullptr; }
   bool SetColor(Color color);

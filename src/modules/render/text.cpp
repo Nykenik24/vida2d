@@ -1,4 +1,6 @@
 #include "vida2d/render/text.hpp"
+#include <cstdio>
+#include <string>
 
 namespace Vida2D {
 namespace Render {

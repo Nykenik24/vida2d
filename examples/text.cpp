@@ -20,33 +20,42 @@ Vida2D::Color RandomColor() {
   return colors[SDL_rand(6)];
 }
 
+int rand_range(int min, int max) {
+  int n = SDL_rand(max);
+  return n >= min ? n : min;
+}
+
 int main(void) {
   Vida2D::Context::Init("test", 800, 600);
 
   Vida2D::Render::SetBackgroundColor(Vida2D::Color(20, 20, 20, 255));
 
   Vida2D::Render::Font font("assets/font.ttf", 24);
+  Vida2D::Render::Font debug_font("assets/font.ttf", 12);
   Vida2D::Render::Text label(font, "Hello, World!", Vida2D::Red);
 
-  double timer = 0;
+  Vida2D::Time::Timer timer(1);
+
+  Vida2D::Render::Text debug_info(debug_font, "");
+
   Vida2D::Vector2 pos(0, 0);
 
   while (Vida2D::Running()) {
     Vida2D::PollEvents();
     Vida2D::ClearScreen();
 
-    Vida2D::Render::SetColor(Vida2D::White);
-    if (!label.Draw(pos)) {
-      std::cout << "couldn't render text!" << std::endl;
-    }
+    label.Draw(pos);
 
-    timer += Vida2D::Time::GetDelta();
-    if (timer >= 1) {
+    debug_info.SetStringF(
+        "Duration: %.1f\nLeft: %.1f\nElapsed: %.1f\n\nPos: %.0f, %.0f",
+        timer.GetDuration(), timer.Left(), timer.Elapsed(), pos.x, pos.y);
+    debug_info.Draw(Vida2D::Vector2(5, 5));
+
+    if (timer.Done()) {
       label.SetColor(RandomColor());
-      auto size = SDL_rand(96);
-      font.SetSize(size >= 12 ? size : 12);
-      pos = Vida2D::Vector2(SDL_rand(800), SDL_rand(600));
-      timer = 0;
+      font.SetSize(rand_range(24, 48));
+      pos = Vida2D::Vector2(rand_range(50, 700), rand_range(50, 500));
+      timer.SetDuration(rand_range(1, 4));
     }
 
     Vida2D::Render::Update();
