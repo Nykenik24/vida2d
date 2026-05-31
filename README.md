@@ -44,7 +44,7 @@ int main(void) {
     Vida2D::Render::SetColor(Vida2D::Green);
     Vida2D::Render::RectFill(first_pos.TranslatedX(75 * 2), size);
 
-    Vida2D::Update();
+    Vida2D::Render::Update();
   }
 }
 ```
