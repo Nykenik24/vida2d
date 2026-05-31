@@ -1,6 +1,6 @@
 #include "vida2d.hpp"
 #include "vida2d/color.hpp"
-#include "vida2d/render.hpp"
+#include "vida2d/render/render.hpp"
 #include "vida2d/vec.hpp"
 
 int main(void) {

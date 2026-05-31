@@ -22,6 +22,11 @@ set(SDL_INSTALL_TESTS OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 
+set(SDLTTF_VENDORED       ON  CACHE BOOL "" FORCE)
+set(SDLTTF_SAMPLES        OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS     OFF CACHE BOOL "" FORCE)
+add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
+
 file(GLOB_RECURSE VIDA2D_SOURCES CONFIGURE_DEPENDS
     src/*.cpp
 )
@@ -36,7 +41,7 @@ target_include_directories(vida2d
 )
 
 target_link_libraries(vida2d
-    PUBLIC SDL3-static
+    PUBLIC SDL3-static SDL3_ttf-static
 )
 
 target_compile_options(vida2d PRIVATE

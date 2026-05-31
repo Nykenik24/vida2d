@@ -1,6 +1,8 @@
 #include "vida2d.hpp"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3/SDL_timer.h"
+#include "vida2d/int_types.hpp"
 
 namespace Vida2D {
 Context *Context::instance = nullptr;
@@ -19,5 +21,15 @@ void PollEvents() {
     if (e.type == SDL_EVENT_QUIT)
       Context::GetInstance().SetRunning(false);
   }
+}
+
+bool Update() {
+  uint64 now = SDL_GetTicksNS();
+  auto &ctx = Context::GetInstance();
+  uint64 last = ctx.GetLastTime();
+  float dt = last == 0 ? 0.0f : (now - last) / 1e9f;
+  ctx.SetDT(dt);
+  ctx.SetLastTime(now);
+  return true;
 }
 } // namespace Vida2D
