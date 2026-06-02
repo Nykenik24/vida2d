@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.3)
 
-project(vida2d
+project(vida
     VERSION 0.1.0
     LANGUAGES CXX
 )
@@ -30,24 +30,24 @@ file(GLOB_RECURSE VIDA2D_SOURCES CONFIGURE_DEPENDS
     src/*.cpp
 )
 
-add_library(vida2d STATIC ${VIDA2D_SOURCES})
+add_library(vida STATIC ${VIDA2D_SOURCES})
 
-target_include_directories(vida2d
+target_include_directories(vida
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(vida2d
+target_link_libraries(vida
     PUBLIC
         OpenGL::GL
         freeglut_static
 )
 
-target_compile_definitions(vida2d PUBLIC FREEGLUT_STATIC)
+target_compile_definitions(vida PUBLIC FREEGLUT_STATIC)
 
-target_compile_options(vida2d PRIVATE
+target_compile_options(vida PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
 )
@@ -58,7 +58,7 @@ foreach(EXAMPLE_SRC ${EXAMPLE_SOURCES})
   get_filename_component(EXAMPLE_NAME ${EXAMPLE_SRC} NAME_WE)
 
   add_executable(${EXAMPLE_NAME} ${EXAMPLE_SRC})
-  target_link_libraries(${EXAMPLE_NAME} PRIVATE vida2d)
+  target_link_libraries(${EXAMPLE_NAME} PRIVATE vida)
 
   set_target_properties(${EXAMPLE_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
