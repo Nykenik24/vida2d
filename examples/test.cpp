@@ -1,11 +1,13 @@
-#include "vida.hpp"
-#include "vida/event.hpp"
+#include "vida/Engine.hpp"
+#include "vida/Event.hpp"
+#include "vida/Game.hpp"
+#include "vida/render/Renderer.hpp"
 #include <iostream>
 
 class MyGame : public Vida::Game {
 public:
   bool Loop(float dt) override;
-  bool Draw() override { return true; };
+  bool Draw(Vida::Renderer *render) override { return true; };
   void Handle(Vida::EventType ev) override;
 
 private:
@@ -28,4 +30,5 @@ int main(void) {
   while (engine.Running()) {
     engine.Update();
   }
+  return 0;
 }

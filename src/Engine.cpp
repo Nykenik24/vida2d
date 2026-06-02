@@ -1,5 +1,5 @@
-#include "vida.hpp"
-#include "vida/event.hpp"
+#include "vida/Engine.hpp"
+#include "vida/Event.hpp"
 #include <chrono>
 
 namespace Vida {
@@ -15,12 +15,18 @@ bool Engine::Update() {
   }
   game->Handle(EventType::LoopExit);
 
-  game->Handle(EventType::DrawEnter);
-  if (!game->Draw()) {
+  if (!renderer.ShouldClose()) {
+    game->Handle(EventType::DrawEnter);
+    renderer.BeginFrame();
+    if (!game->Draw(&renderer)) {
+      Quit();
+      return false;
+    }
+    renderer.EndFrame();
+    game->Handle(EventType::DrawExit);
+  } else {
     Quit();
-    return false;
   }
-  game->Handle(EventType::DrawExit);
 
   return true;
 }
