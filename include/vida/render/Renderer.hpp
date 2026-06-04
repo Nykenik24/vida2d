@@ -31,8 +31,8 @@ public:
   void DrawFillPolygon(const std::vector<Vector2f> &points,
                        ColorRGBA color = {});
 
-  void DrawRect(Vector2f pos, Vector2f size, ColorRGBA color);
-  void DrawFillRect(Vector2f pos, Vector2f size, ColorRGBA color);
+  void DrawRect(Vector2f pos, Vector2f size, ColorRGBA color = {});
+  void DrawFillRect(Vector2f pos, Vector2f size, ColorRGBA color = {});
 
   void DrawCircle(Vector2f center, float radius, ColorRGBA color = {},
                   int segments = 64);
