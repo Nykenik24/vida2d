@@ -51,7 +51,7 @@ private:
   GLuint vao = 0;
   GLuint vbo = 0;
   size_t vboCapacity = 0;
-  Vector2f windowSize;
+  Vector2f window_size;
 
   static inline bool shouldClose = false;
 
