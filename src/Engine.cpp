@@ -4,6 +4,11 @@
 
 namespace Vida {
 bool Engine::Update() {
+  if (game->WantToQuit()) {
+    Quit();
+    return true;
+  }
+
   auto now = std::chrono::high_resolution_clock::now();
   dt = std::chrono::duration<float>(now - prev).count();
   prev = now;

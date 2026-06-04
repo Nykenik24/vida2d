@@ -1,6 +1,9 @@
 #pragma once
 
+#include "GL/freeglut_std.h"
+#include "vida/Event.hpp"
 #include "vida/Game.hpp"
+#include "vida/input/KeyMap.hpp"
 #include <chrono>
 #include <memory>
 #include <type_traits>
@@ -31,9 +34,37 @@ public:
   void SetWindowPos(Vector2f pos);
 
 private:
+private:
+  inline static Engine *s_instance = nullptr;
+
+  void InitInputHandling() {
+    s_instance = this;
+
+    glutKeyboardFunc([](unsigned char k, int, int) {
+      if (auto key = KeyFromGlut(k))
+        s_instance->game->Handle(Event(EventType::KeyboardDown, *key));
+    });
+
+    glutKeyboardUpFunc([](unsigned char k, int, int) {
+      if (auto key = KeyFromGlut(k))
+        s_instance->game->Handle(Event(EventType::KeyboardUp, *key));
+    });
+
+    glutSpecialFunc([](int k, int, int) {
+      if (auto key = KeyFromGlutSpecial(k))
+        s_instance->game->Handle(Event(EventType::KeyboardDown, *key));
+    });
+
+    glutSpecialUpFunc([](int k, int, int) {
+      if (auto key = KeyFromGlutSpecial(k))
+        s_instance->game->Handle(Event(EventType::KeyboardUp, *key));
+    });
+  }
+
   explicit Engine(std::unique_ptr<Game> g)
       : game(std::move(g)), renderer("Vida2D", Vector2f(800, 600)) {
     prev = std::chrono::high_resolution_clock::now();
+    InitInputHandling();
   }
 
   std::unique_ptr<Game> game;

@@ -1,8 +1,8 @@
-#include "vida/Color.hpp"
 #include "vida/Engine.hpp"
 #include "vida/Event.hpp"
 #include "vida/Game.hpp"
 #include "vida/Vector.hpp"
+#include "vida/input/Key.hpp"
 #include "vida/render/Renderer.hpp"
 
 class MyGame : public Vida::Game {
@@ -16,16 +16,16 @@ private:
 
 bool MyGame::Loop(float dt) { return true; }
 
-bool MyGame::Draw(Vida::Renderer *render) {
-  render->DrawFillPolygon(
-      {{50, 300}, {200, 100}, {350, 300}, {300, 300}, {200, 175}, {100, 300}},
-      Vida::ColorRGBA(0, 255, 255));
-  return true;
-}
+bool MyGame::Draw(Vida::Renderer *render) { return true; }
 
 void MyGame::Handle(Vida::Event ev) {
   switch (ev.type) {
-  case Vida::EventType::DrawFirstEnter:
+  case Vida::EventType::KeyboardDown:
+    if (ev.key == Vida::Key::Escape) {
+      Quit();
+    }
+    break;
+  case Vida::EventType::KeyboardUp:
   default:
     return;
   }
