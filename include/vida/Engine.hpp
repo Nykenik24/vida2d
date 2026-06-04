@@ -4,6 +4,7 @@
 #include "vida/Event.hpp"
 #include "vida/Game.hpp"
 #include "vida/input/KeyMap.hpp"
+#include "vida/input/Mouse.hpp"
 #include <chrono>
 #include <memory>
 #include <type_traits>
@@ -58,6 +59,25 @@ private:
     glutSpecialUpFunc([](int k, int, int) {
       if (auto key = KeyFromGlutSpecial(k))
         s_instance->game->Handle(Event(EventType::KeyboardUp, *key));
+    });
+
+    glutMouseFunc([](int b, int state, int x, int y) {
+      if (auto bttn = MouseButtonFromGlut(b))
+        s_instance->game->Handle(Event(state == GLUT_DOWN ? EventType::MouseDown
+                                                          : EventType::MouseUp,
+                                       *bttn, x, y));
+    });
+
+    glutMotionFunc([](int x, int y) {
+      Event ev(EventType::MouseDragged);
+      ev.mx = x, ev.my = y;
+      s_instance->game->Handle(ev);
+    });
+
+    glutPassiveMotionFunc([](int x, int y) {
+      Event ev(EventType::MouseMoved);
+      ev.mx = x, ev.my = y;
+      s_instance->game->Handle(ev);
     });
   }
 
