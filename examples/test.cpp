@@ -3,57 +3,73 @@
 #include "vida/Game.hpp"
 #include "vida/Vector.hpp"
 #include "vida/input/Key.hpp"
-#include "vida/input/Mouse.hpp"
 #include "vida/render/Renderer.hpp"
 #include <iostream>
 #include <string>
 
+int wrap(int n, int min, int max) {
+  if (n < min)
+    return min;
+  if (n > max)
+    return max;
+  return n;
+};
+
 class MyGame : public Vida::Game {
 public:
-  bool Loop(float dt) override;
+  bool Loop() override;
   bool Draw(Vida::Renderer *render) override;
   void Handle(Vida::Event ev) override;
+  void Move(int dx, int dy) {
+    x += (speed * dx) * dt;
+    y += (speed * dy) * dt;
+  }
+
+  int x = 50, y = 50;
+  const int speed = 1500;
 
 private:
 };
 
-bool MyGame::Loop(float dt) { return true; }
+bool MyGame::Loop() {
+  Vida::Vector2f window_size = GetWindowSize();
+  x = wrap(x, 0, window_size.x);
+  y = wrap(y, 0, window_size.y);
+  return true;
+}
 
-bool MyGame::Draw(Vida::Renderer *render) { return true; }
+bool MyGame::Draw(Vida::Renderer *render) {
+  render->DrawFillRect(Vida::Vector2f(x, y), Vida::Vector2f(50, 50));
+  return true;
+}
 
 void MyGame::Handle(Vida::Event ev) {
   switch (ev.type) {
   case Vida::EventType::KeyboardDown:
-    if (ev.key == Vida::Key::Escape) {
+    switch (ev.key) {
+    case Vida::Key::Escape:
       Quit();
-    }
-    break;
-  case Vida::EventType::MouseDown: {
-    std::string bttn = "<null>";
-
-    switch (ev.mouse_bttn) {
-    case Vida::MouseBttn::Left:
-      bttn = "Pressed left";
       break;
-    case Vida::MouseBttn::Right:
-      bttn = "Pressed right";
+    case Vida::Key::w:
+      std::cout << "Up" << std::endl;
+      Move(0, -1);
       break;
-    case Vida::MouseBttn::Middle:
-      bttn = "Pressed scroll wheel";
+    case Vida::Key::a:
+      std::cout << "Left" << std::endl;
+      Move(-1, 0);
       break;
-    case Vida::MouseBttn::ScrollUp:
-      bttn = "Scrolled up";
+    case Vida::Key::s:
+      std::cout << "Down" << std::endl;
+      Move(0, 1);
       break;
-    case Vida::MouseBttn::ScrollDown:
-      bttn = "Scrolled down";
+    case Vida::Key::d:
+      std::cout << "Right" << std::endl;
+      Move(1, 0);
       break;
     default:
       break;
     }
-
-    std::cout << bttn << " at (" << ev.mx << ", " << ev.my << ")" << std::endl;
     break;
-  }
   default:
     return;
   }

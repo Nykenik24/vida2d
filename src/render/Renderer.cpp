@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace Vida {
-Renderer::Renderer(std::string title, Vector2f size) : windowSize(size) {
+Renderer::Renderer(std::string title, Vector2f size) : window_size(size) {
   static bool initialized = false;
   if (!initialized) {
     int argc = 0;

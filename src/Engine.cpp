@@ -12,13 +12,14 @@ bool Engine::Update() {
   auto now = std::chrono::high_resolution_clock::now();
   dt = std::chrono::duration<float>(now - prev).count();
   prev = now;
+  game->dt = dt;
 
   if (first_loop) {
     first_loop = false;
     game->Handle(Event(EventType::LoopFirstEnter));
   }
   game->Handle(Event(EventType::LoopEnter));
-  if (!game->Loop(dt)) {
+  if (!game->Loop()) {
     Quit();
     return false;
   }

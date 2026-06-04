@@ -1,6 +1,7 @@
 // clang-format off
 #include <GL/glew.h>
 // clang-format on
+#include "GL/freeglut_std.h"
 #include "vida/Color.hpp"
 #include "vida/Vector.hpp"
 #include "vida/render/Renderer.hpp"
@@ -61,6 +62,12 @@ void Renderer::InitShaders() {
 }
 
 void Renderer::BeginFrame() {
+  int w = glutGet(GLUT_WINDOW_WIDTH);
+  int h = glutGet(GLUT_WINDOW_HEIGHT);
+  window_size = Vector2f(w, h);
+
+  glViewport(0, 0, static_cast<GLsizei>(window_size.x),
+             static_cast<GLsizei>(window_size.y));
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -70,8 +77,8 @@ void Renderer::EndFrame() {
 }
 
 Vector2f Renderer::PixelToNDC(Vector2f p) const {
-  return {(p.x / windowSize.x) * 2.0f - 1.0f,
-          -((p.y / windowSize.y) * 2.0f - 1.0f)};
+  return {(p.x / window_size.x) * 2.0f - 1.0f,
+          -((p.y / window_size.y) * 2.0f - 1.0f)};
 }
 
 void Renderer::DrawPrimitive(GLenum mode, const std::vector<float> &verts,
