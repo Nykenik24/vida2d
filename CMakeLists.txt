@@ -1,76 +1,48 @@
 cmake_minimum_required(VERSION 4.3)
-
-project(vida
-    VERSION 0.1.0
-    LANGUAGES CXX
-)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+project(vida VERSION 0.1.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
+
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
-set(FREEGLUT_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
-set(FREEGLUT_BUILD_GAMES OFF CACHE BOOL "" FORCE)
-set(FREEGLUT_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(FREEGLUT_BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
-set(FREEGLUT_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(vendored/freeglut EXCLUDE_FROM_ALL)
-add_subdirectory(vendored/poly2tri EXCLUDE_FROM_ALL)
+add_library(glad STATIC vendored/glad/src/glad.c)
+target_include_directories(glad PUBLIC vendored/glad/include)
+
+add_subdirectory(vendored/glfw EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-file(GLOB_RECURSE VIDA_SOURCES CONFIGURE_DEPENDS
-    src/*.cpp
-)
+add_subdirectory(core)
 
-add_library(vida STATIC ${VIDA_SOURCES})
+file(GLOB COMPONENT_DIRS CONFIGURE_DEPENDS components/*)
 
-target_include_directories(vida
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendored/freeglut/include
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+foreach(COMPONENT_DIR ${COMPONENT_DIRS})
+  if(IS_DIRECTORY ${COMPONENT_DIR} AND EXISTS ${COMPONENT_DIR}/CMakeLists.txt)
+    message(STATUS "vida: found component → ${COMPONENT_DIR}")
+    add_subdirectory(${COMPONENT_DIR})
+  endif()
+endforeach()
 
-target_link_libraries(vida
-    PUBLIC
-        OpenGL::GL
-        GLEW::GLEW
-        freeglut_static
-    PRIVATE
-        poly2tri
-)
+file(GLOB EXAMPLE_DIRS CONFIGURE_DEPENDS examples/*)
 
-target_compile_definitions(vida PUBLIC FREEGLUT_STATIC)
-
-target_compile_options(vida PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
-    $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
-
-file(GLOB EXAMPLE_SOURCES CONFIGURE_DEPENDS examples/*.cpp)
-
-foreach(EXAMPLE_SRC ${EXAMPLE_SOURCES})
-  get_filename_component(EXAMPLE_NAME ${EXAMPLE_SRC} NAME_WE)
-
-  add_executable(${EXAMPLE_NAME} ${EXAMPLE_SRC})
-  target_link_libraries(${EXAMPLE_NAME} PRIVATE vida)
-
-  set_target_properties(${EXAMPLE_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin
-    )
-
-  if(UNIX AND NOT APPLE)
-    target_link_libraries(${EXAMPLE_NAME} PRIVATE m dl pthread)
+foreach(EXAMPLE_DIR ${EXAMPLE_DIRS})
+  if(IS_DIRECTORY ${EXAMPLE_DIR} AND EXISTS ${EXAMPLE_DIR}/CMakeLists.txt)
+    message(STATUS "vida: found example → ${EXAMPLE_DIR}")
+    add_subdirectory(${EXAMPLE_DIR})
   endif()
 endforeach()
