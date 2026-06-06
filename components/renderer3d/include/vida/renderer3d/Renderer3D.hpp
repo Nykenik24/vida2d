@@ -7,6 +7,7 @@
 #include "vida/core/Math.hpp"
 #include "vida/renderer3d/Camera.hpp"
 #include "vida/renderer3d/Shader.hpp"
+#include "vida/texture/Texture.hpp"
 #include "vida/window/Window.hpp"
 #include <memory>
 #include <unordered_map>
@@ -27,11 +28,27 @@ public:
   void SetCamera(const Camera &camera);
   Camera &GetCamera() { return camera; }
 
-  void DrawMesh(const Mesh &mesh, const Mat4 &transform, ColorRGBA color);
-  void DrawQuad(Vec2 position, Vec2 size, ColorRGBA color);
+  void DrawMesh(const Mesh &mesh, const Mat4 &transform, ColorRGBA color,
+                const Texture *texture = nullptr);
+
+  void DrawCube(Vec3 position, Vec3 size, const Texture &texture,
+                ColorRGBA tint = ColorRGBA::White);
   void DrawCube(Vec3 position, Vec3 size, ColorRGBA color);
+
+  void DrawQuad(Vec2 position, Vec2 size, const Texture &texture,
+                ColorRGBA tint = ColorRGBA::White);
+  void DrawQuad(Vec2 position, Vec2 size, ColorRGBA color);
+
+  void DrawSphere(Vec3 position, float radius, const Texture &texture,
+                  ColorRGBA tint = ColorRGBA::White);
   void DrawSphere(Vec3 position, float radius, ColorRGBA color);
+
+  void DrawCone(Vec3 position, float radius, float height,
+                const Texture &texture, ColorRGBA tint = ColorRGBA::White);
   void DrawCone(Vec3 position, float radius, float height, ColorRGBA color);
+
+  void DrawPyramid(Vec3 position, Vec3 size, const Texture &texture,
+                   ColorRGBA tint = ColorRGBA::White);
   void DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color);
 
   void SetShader(std::unique_ptr<Shader> shader);

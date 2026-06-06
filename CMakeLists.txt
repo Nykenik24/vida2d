@@ -24,6 +24,9 @@ target_include_directories(glad PUBLIC vendored/glad/include)
 add_subdirectory(vendored/glfw EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glm EXCLUDE_FROM_ALL)
 
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${CMAKE_SOURCE_DIR}/vendored/stb)
+
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 

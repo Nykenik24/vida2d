@@ -1,4 +1,3 @@
-// vida/core/Math.hpp
 #pragma once
 
 #include <glm/glm.hpp>

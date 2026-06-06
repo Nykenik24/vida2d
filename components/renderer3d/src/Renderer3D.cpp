@@ -3,6 +3,7 @@
 #include "vida/core/Math.hpp"
 #include "vida/core/Mesh.hpp"
 #include "vida/renderer3d/Camera.hpp"
+#include "vida/texture/Texture.hpp"
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -81,7 +82,7 @@ void Renderer3D::Present() { glfwSwapBuffers(window.Handle()); }
 void Renderer3D::SetCamera(const Camera &cam) { camera = cam; }
 
 void Renderer3D::DrawMesh(const Mesh &mesh, const Mat4 &transform,
-                          ColorRGBA color) {
+                          ColorRGBA color, const Texture *texture) {
   const GPUMesh &gpu = GetOrUpload(mesh);
 
   Mat4 mvp = camera.ProjectionMatrix(window.Width(), window.Height()) *
@@ -91,9 +92,45 @@ void Renderer3D::DrawMesh(const Mesh &mesh, const Mat4 &transform,
   default_shader->SetMat4("u_mvp", mvp);
   default_shader->SetVec3("u_color", Vec3(color.r, color.g, color.b));
 
+  if (texture) {
+    texture->Bind(0);
+    default_shader->SetInt("u_texture", 0);
+    default_shader->SetInt("u_use_texture", 1);
+  } else {
+    default_shader->SetInt("u_use_texture", 0);
+  }
+
   glBindVertexArray(gpu.VAO);
   glDrawArrays(GL_TRIANGLES, 0, (GLsizei)gpu.vertex_count);
   glBindVertexArray(0);
+
+  if (texture)
+    texture->Unbind();
+}
+
+void Renderer3D::DrawCube(Vec3 position, Vec3 size, const Texture &texture,
+                          ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Cube();
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) * glm::scale(Mat4(1.0f), size);
+  DrawMesh(mesh, transform, tint, &texture);
+}
+
+void Renderer3D::DrawCube(Vec3 position, Vec3 size, ColorRGBA color) {
+  static const Mesh mesh = Mesh::Cube();
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) * glm::scale(Mat4(1.0f), size);
+
+  DrawMesh(mesh, transform, color);
+}
+
+void Renderer3D::DrawQuad(Vec2 position, Vec2 size, const Texture &texture,
+                          ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Quad();
+  Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
+                   glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
+  DrawMesh(mesh, transform, tint, &texture);
 }
 
 void Renderer3D::DrawQuad(Vec2 position, Vec2 size, ColorRGBA color) {
@@ -103,6 +140,16 @@ void Renderer3D::DrawQuad(Vec2 position, Vec2 size, ColorRGBA color) {
                    glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
 
   DrawMesh(mesh, transform, color);
+}
+
+void Renderer3D::DrawSphere(Vec3 position, float radius, const Texture &texture,
+                            ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Sphere(16, 16);
+
+  Mat4 transform = glm::translate(Mat4(1.0f), position) *
+                   glm::scale(Mat4(1.0f), Vec3(radius * 2.0f));
+
+  DrawMesh(mesh, transform, tint, &texture);
 }
 
 void Renderer3D::DrawSphere(Vec3 position, float radius, ColorRGBA color) {
@@ -115,6 +162,17 @@ void Renderer3D::DrawSphere(Vec3 position, float radius, ColorRGBA color) {
 }
 
 void Renderer3D::DrawCone(Vec3 position, float radius, float height,
+                          const Texture &texture, ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Cone(32);
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) *
+      glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, height, radius * 2.0f));
+
+  DrawMesh(mesh, transform, tint, &texture);
+}
+
+void Renderer3D::DrawCone(Vec3 position, float radius, float height,
                           ColorRGBA color) {
   static const Mesh mesh = Mesh::Cone(32);
 
@@ -123,6 +181,16 @@ void Renderer3D::DrawCone(Vec3 position, float radius, float height,
       glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, height, radius * 2.0f));
 
   DrawMesh(mesh, transform, color);
+}
+
+void Renderer3D::DrawPyramid(Vec3 position, Vec3 size, const Texture &texture,
+                             ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Pyramid();
+
+  Mat4 transform =
+      glm::translate(Mat4(1.0f), position) * glm::scale(Mat4(1.0f), size);
+
+  DrawMesh(mesh, transform, tint, &texture);
 }
 
 void Renderer3D::DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color) {

@@ -16,8 +16,12 @@ target_link_libraries(vida_renderer3d
     PUBLIC
         vida::core
         vida::window
+        vida::texture
         glfw
         OpenGL::GL
+        glad
+        glm::glm
+        stb
 )
 
 target_compile_definitions(vida_renderer3d PUBLIC FREEGLUT_STATIC)

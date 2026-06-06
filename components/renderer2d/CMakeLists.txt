@@ -17,6 +17,7 @@ target_link_libraries(vida_renderer2d
         vida::core
         vida::window
         vida::renderer3d
+        vida::texture
         glfw
         OpenGL::GL
 )

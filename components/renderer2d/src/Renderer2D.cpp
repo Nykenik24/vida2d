@@ -42,4 +42,16 @@ void Renderer2D::DrawTriangle(Vec2 position, Vec2 size, ColorRGBA color) {
 
   renderer.DrawMesh(mesh, transform, color);
 }
+
+void Renderer2D::DrawSprite(Vec2 position, Vec2 size, const Texture &texture) {
+  renderer.DrawQuad(position, size, texture);
+}
+
+void Renderer2D::DrawSprite(Vec2 position, Vec2 size, const Texture &texture,
+                            ColorRGBA tint) {
+  static const Mesh mesh = Mesh::Quad();
+  Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
+                   glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
+  renderer.DrawMesh(mesh, transform, tint, &texture);
+}
 } // namespace Vida
