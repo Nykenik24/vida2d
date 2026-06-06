@@ -1,4 +1,5 @@
 #include "vida/core/Mesh.hpp"
+#include "vida/core/OBJLoader.hpp"
 
 namespace Vida {
 Mesh Mesh::Cube() {
@@ -175,4 +176,6 @@ Mesh Mesh::Triangle() {
   };
   return m;
 }
+
+Mesh Mesh::FromOBJ(const std::string &path) { return OBJLoader::Load(path); }
 } // namespace Vida
