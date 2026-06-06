@@ -6,6 +6,7 @@
 #define GLFW_INCLUDE_NONE
 #include "vida/core/Math.hpp"
 #include "vida/renderer3d/Camera.hpp"
+#include "vida/renderer3d/FX.hpp"
 #include "vida/renderer3d/Shader.hpp"
 #include "vida/texture/Texture.hpp"
 #include "vida/window/Window.hpp"
@@ -22,6 +23,7 @@ public:
   Renderer3D(const Renderer3D &) = delete;
   Renderer3D &operator=(const Renderer3D &) = delete;
 
+  void Update(float dt);
   void Clear(ColorRGBA color);
   void Present();
 
@@ -29,27 +31,38 @@ public:
   Camera &GetCamera() { return camera; }
 
   void DrawMesh(const Mesh &mesh, const Mat4 &transform, ColorRGBA color,
-                const Texture *texture = nullptr);
+                const Texture *texture = nullptr, FX fx = FX::Unlit,
+                const FXParams &fx_params = FXParams{});
 
   void DrawCube(Vec3 position, Vec3 size, const Texture &texture,
-                ColorRGBA tint = ColorRGBA::White);
-  void DrawCube(Vec3 position, Vec3 size, ColorRGBA color);
+                ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
+                const FXParams &fx_params = FXParams{});
+  void DrawCube(Vec3 position, Vec3 size, ColorRGBA color, FX fx = FX::Unlit,
+                const FXParams &fx_params = FXParams{});
 
   void DrawQuad(Vec2 position, Vec2 size, const Texture &texture,
-                ColorRGBA tint = ColorRGBA::White);
-  void DrawQuad(Vec2 position, Vec2 size, ColorRGBA color);
+                ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
+                const FXParams &fx_params = FXParams{});
+  void DrawQuad(Vec2 position, Vec2 size, ColorRGBA color, FX fx = FX::Unlit,
+                const FXParams &fx_params = FXParams{});
 
   void DrawSphere(Vec3 position, float radius, const Texture &texture,
-                  ColorRGBA tint = ColorRGBA::White);
-  void DrawSphere(Vec3 position, float radius, ColorRGBA color);
+                  ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
+                  const FXParams &fx_params = FXParams{});
+  void DrawSphere(Vec3 position, float radius, ColorRGBA color,
+                  FX fx = FX::Unlit, const FXParams &fx_params = FXParams{});
 
   void DrawCone(Vec3 position, float radius, float height,
-                const Texture &texture, ColorRGBA tint = ColorRGBA::White);
-  void DrawCone(Vec3 position, float radius, float height, ColorRGBA color);
+                const Texture &texture, ColorRGBA tint = ColorRGBA::White,
+                FX fx = FX::Unlit, const FXParams &fx_params = FXParams{});
+  void DrawCone(Vec3 position, float radius, float height, ColorRGBA color,
+                FX fx = FX::Unlit, const FXParams &fx_params = FXParams{});
 
   void DrawPyramid(Vec3 position, Vec3 size, const Texture &texture,
-                   ColorRGBA tint = ColorRGBA::White);
-  void DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color);
+                   ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
+                   const FXParams &fx_params = FXParams{});
+  void DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color, FX fx = FX::Unlit,
+                   const FXParams &fx_params = FXParams{});
 
   void SetShader(std::unique_ptr<Shader> shader);
   void ResetShader();
@@ -70,6 +83,12 @@ private:
   GLuint VAO, VBO;
 
   void InitBuffers();
+
+  std::unordered_map<FX, std::unique_ptr<Shader>> fx_shaders;
+  float time_elapsed = 0.0f;
+
+  void LoadFX();
+  Shader &GetShader(FX fx);
 
   std::unordered_map<const Vertex *, GPUMesh> mesh_cache;
   inline const GPUMesh &GetOrUpload(const Mesh &mesh) {
