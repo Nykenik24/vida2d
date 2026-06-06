@@ -1,6 +1,6 @@
 # vida
 
-LÖVE-based game framework made in C, for C.
+LÖVE-inspired game framework made in C++, for C++.
 
 **REALLY W.I.P., don't expect much.**
 
@@ -13,48 +13,28 @@ First, build the library:
 cmake -B build && cmake --build build
 ```
 
-Then, use the generated library in `lib/`, or try out the examples at `bin/`.
+Then, use the generated libraries in `lib/`, or try out the examples at `bin/`.
 
 ### Example
 
-```c
-#include "vida/Engine.hpp"
-#include "vida/Event.hpp"
-#include "vida/Game.hpp"
-#include "vida/Vector.hpp"
-#include "vida/render/Renderer.hpp"
-#include <iostream>
+```cpp
+#include "vida/core/Color.hpp"
+#include "vida/renderer3d/Renderer3D.hpp"
+#include "vida/window/Window.hpp"
 
-class MyGame : public Vida::Game {
-public:
-  bool Loop(float dt) override;
-  bool Draw(Vida::Renderer *render) override { return true; };
-  void Handle(Vida::Event ev) override;
+int main() {
+  Vida::Window window(800, 600, "Vida 2D");
+  Vida::Renderer3D renderer(window);
 
-private:
-};
+  renderer.GetCamera().Move({2, 0, 5});
+  renderer.GetCamera().Point({1, 0, 0});
 
-bool MyGame::Loop(float dt) { return true; }
-
-void MyGame::Handle(Vida::Event ev) {
-  switch (ev.type) {
-  case Vida::EventType::DrawFirstEnter:
-
-    std::cout << "first draw!" << std::endl;
-    break;
-  default:
-    return;
+  while (!window.ShouldClose()) {
+    window.PollEvents();
+    renderer.Clear(Vida::ColorRGBA::Black);
+    renderer.DrawCube({0, 0, 0}, {1, 1, 1}, Vida::ColorRGBA::Blue);
+    renderer.Present();
   }
-}
-
-int main(void) {
-  auto engine = Vida::Engine::Create<MyGame>();
-  engine.SetWindowTitle("My cool game");
-  engine.SetWindowSize(Vector2f(1080, 720));
-
-  while (engine.Running()) {
-    engine.Update();
-  }
-  return 0;
 }
 ```
+<img width="954" height="747" alt="image" src="https://github.com/user-attachments/assets/321ff8ff-4c78-4ead-9742-738007171710" />
