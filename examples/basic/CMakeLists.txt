@@ -3,6 +3,7 @@ add_executable(basic main.cpp)
 target_link_libraries(basic PRIVATE
     vida::core
     vida::renderer2d
+    vida::input
 )
 
 set_target_properties(basic PROPERTIES
