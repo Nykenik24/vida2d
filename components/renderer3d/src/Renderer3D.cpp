@@ -6,7 +6,6 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stdexcept>
 
 namespace Vida {
 
@@ -22,79 +21,32 @@ Mat4 Camera::ProjectionMatrix(int width, int height) const {
   return glm::perspective(glm::radians(fov), aspect, 0.1f, 1000.0f);
 }
 
-static const char *VERT_SRC = R"(
-    #version 330 core
-    layout(location = 0) in vec3 a_pos;
-
-    uniform mat4 u_mvp;
-
-    void main() {
-        gl_Position = u_mvp * vec4(a_pos, 1.0);
-    }
-)";
-
-static const char *FRAG_SRC = R"(
-    #version 330 core
-    out vec4 frag_color;
-
-    uniform vec3 u_color;
-
-    void main() {
-        frag_color = vec4(u_color, 1.0);
-    }
-)";
-
-static GLuint CompileShader(GLenum type, const char *src) {
-  GLuint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &src, nullptr);
-  glCompileShader(shader);
-
-  int ok;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
-  if (!ok) {
-    char log[512];
-    glGetShaderInfoLog(shader, 512, nullptr, log);
-    throw std::runtime_error(std::string("Shader compile error: ") + log);
-  }
-
-  return shader;
+Renderer3D::Renderer3D(Window &window) : window(window) {
+  InitBuffers();
+  default_shader = std::make_unique<Shader>("assets/shaders/default.vert",
+                                            "assets/shaders/default.frag");
 }
 
-Renderer3D::Renderer3D(Window &window) : window(window) {
-  InitShaders();
-  InitBuffers();
+void Renderer3D::SetShader(std::unique_ptr<Shader> shader) {
+  default_shader = std::move(shader);
+}
+
+void Renderer3D::ResetShader() {
+  default_shader = std::make_unique<Shader>("assets/shaders/default.vert",
+                                            "assets/shaders/default.frag");
 }
 
 Renderer3D::~Renderer3D() {
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteProgram(shader_program);
+  for (auto &[key, gpu] : mesh_cache) {
+    glDeleteVertexArrays(1, &gpu.VAO);
+    glDeleteBuffers(1, &gpu.VBO);
+  }
+  glDeleteProgram(default_shader->Handle());
 
   camera.position = Vec3(0.0f, 0.0f, 5.0f);
   camera.target = Vec3(0.0f, 0.0f, 0.0f);
   camera.fov = 45.0f;
   camera.orthographic = false;
-}
-
-void Renderer3D::InitShaders() {
-  GLuint vert = CompileShader(GL_VERTEX_SHADER, VERT_SRC);
-  GLuint frag = CompileShader(GL_FRAGMENT_SHADER, FRAG_SRC);
-
-  shader_program = glCreateProgram();
-  glAttachShader(shader_program, vert);
-  glAttachShader(shader_program, frag);
-  glLinkProgram(shader_program);
-
-  int ok;
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &ok);
-  if (!ok) {
-    char log[512];
-    glGetProgramInfoLog(shader_program, 512, nullptr, log);
-    throw std::runtime_error(std::string("Shader link error: ") + log);
-  }
-
-  glDeleteShader(vert);
-  glDeleteShader(frag);
 }
 
 void Renderer3D::InitBuffers() {
@@ -128,33 +80,20 @@ void Renderer3D::Present() { glfwSwapBuffers(window.Handle()); }
 
 void Renderer3D::SetCamera(const Camera &cam) { camera = cam; }
 
-void Renderer3D::DrawMesh(const Vertex *vertices, size_t count,
-                          const Mat4 &transform, ColorRGBA color) {
+void Renderer3D::DrawMesh(const Mesh &mesh, const Mat4 &transform,
+                          ColorRGBA color) {
+  const GPUMesh &gpu = GetOrUpload(mesh);
+
   Mat4 mvp = camera.ProjectionMatrix(window.Width(), window.Height()) *
              camera.ViewMatrix() * transform;
 
-  glUseProgram(shader_program);
-  glUniformMatrix4fv(glGetUniformLocation(shader_program, "u_mvp"), 1, GL_FALSE,
-                     glm::value_ptr(mvp));
-  glUniform3fv(glGetUniformLocation(shader_program, "u_color"), 1,
-               glm::value_ptr(Vec3(color.r, color.g, color.b)));
+  default_shader->Bind();
+  default_shader->SetMat4("u_mvp", mvp);
+  default_shader->SetVec3("u_color", Vec3(color.r, color.g, color.b));
 
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vec3), vertices,
-               GL_DYNAMIC_DRAW);
-
-  glDrawArrays(GL_TRIANGLES, 0, (GLsizei)count);
+  glBindVertexArray(gpu.VAO);
+  glDrawArrays(GL_TRIANGLES, 0, (GLsizei)gpu.vertex_count);
   glBindVertexArray(0);
-}
-
-void Renderer3D::DrawCube(Vec3 position, Vec3 size, ColorRGBA color) {
-  static const Mesh mesh = Mesh::Cube();
-
-  Mat4 transform = glm::translate(Mat4(1.0f), position) *
-                   glm::scale(Mat4(1.0f), size); // size IS the scale
-
-  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
 }
 
 void Renderer3D::DrawQuad(Vec2 position, Vec2 size, ColorRGBA color) {
@@ -163,7 +102,7 @@ void Renderer3D::DrawQuad(Vec2 position, Vec2 size, ColorRGBA color) {
   Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
                    glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
 
-  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+  DrawMesh(mesh, transform, color);
 }
 
 void Renderer3D::DrawSphere(Vec3 position, float radius, ColorRGBA color) {
@@ -172,7 +111,7 @@ void Renderer3D::DrawSphere(Vec3 position, float radius, ColorRGBA color) {
   Mat4 transform = glm::translate(Mat4(1.0f), position) *
                    glm::scale(Mat4(1.0f), Vec3(radius * 2.0f));
 
-  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+  DrawMesh(mesh, transform, color);
 }
 
 void Renderer3D::DrawCone(Vec3 position, float radius, float height,
@@ -183,7 +122,7 @@ void Renderer3D::DrawCone(Vec3 position, float radius, float height,
       glm::translate(Mat4(1.0f), position) *
       glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, height, radius * 2.0f));
 
-  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+  DrawMesh(mesh, transform, color);
 }
 
 void Renderer3D::DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color) {
@@ -192,6 +131,6 @@ void Renderer3D::DrawPyramid(Vec3 position, Vec3 size, ColorRGBA color) {
   Mat4 transform =
       glm::translate(Mat4(1.0f), position) * glm::scale(Mat4(1.0f), size);
 
-  DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform, color);
+  DrawMesh(mesh, transform, color);
 }
 } // namespace Vida

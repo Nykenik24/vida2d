@@ -14,17 +14,17 @@ Mesh Mesh::Cube() {
   };
 
   face({-0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, 0.5f}, {0.5f, 0.5f, 0.5f},
-       {-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}); // front
+       {-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f});
   face({0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, -0.5f}, {-0.5f, 0.5f, -0.5f},
-       {0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}); // back
+       {0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f});
   face({-0.5f, -0.5f, -0.5f}, {-0.5f, -0.5f, 0.5f}, {-0.5f, 0.5f, 0.5f},
-       {-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}); // left
+       {-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f});
   face({0.5f, -0.5f, 0.5f}, {0.5f, -0.5f, -0.5f}, {0.5f, 0.5f, -0.5f},
-       {0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}); // right
+       {0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f});
   face({-0.5f, 0.5f, 0.5f}, {0.5f, 0.5f, 0.5f}, {0.5f, 0.5f, -0.5f},
-       {-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}); // top
+       {-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f});
   face({-0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, -0.5f}, {0.5f, -0.5f, 0.5f},
-       {-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}); // bottom
+       {-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f});
 
   return m;
 }
@@ -107,7 +107,7 @@ Mesh Mesh::Cone(int segments) {
 
     Vec3 n0 = glm::normalize(Vec3(cos(a0), 0.5f, sin(a0)));
     Vec3 n1 = glm::normalize(Vec3(cos(a1), 0.5f, sin(a1)));
-    Vec3 ns = glm::normalize(n0 + n1); // tip normal
+    Vec3 ns = glm::normalize(n0 + n1);
 
     float u0 = (float)i / segments;
     float u1 = (float)(i + 1) / segments;
@@ -128,7 +128,6 @@ Mesh Mesh::Cone(int segments) {
 Mesh Mesh::Pyramid() {
   Mesh m;
 
-  // corners of the base
   Vec3 tl = {-0.5f, -0.5f, 0.5f};
   Vec3 tr = {0.5f, -0.5f, 0.5f};
   Vec3 br = {0.5f, -0.5f, -0.5f};

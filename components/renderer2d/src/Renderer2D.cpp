@@ -31,8 +31,7 @@ void Renderer2D::DrawCircle(Vec2 position, float radius, ColorRGBA color) {
       glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
       glm::scale(Mat4(1.0f), Vec3(radius * 2.0f, radius * 2.0f, 1.0f));
 
-  renderer.DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform,
-                    color);
+  renderer.DrawMesh(mesh, transform, color);
 }
 
 void Renderer2D::DrawTriangle(Vec2 position, Vec2 size, ColorRGBA color) {
@@ -41,7 +40,6 @@ void Renderer2D::DrawTriangle(Vec2 position, Vec2 size, ColorRGBA color) {
   Mat4 transform = glm::translate(Mat4(1.0f), Vec3(position, 0.0f)) *
                    glm::scale(Mat4(1.0f), Vec3(size, 1.0f));
 
-  renderer.DrawMesh(mesh.vertices.data(), mesh.vertices.size(), transform,
-                    color);
+  renderer.DrawMesh(mesh, transform, color);
 }
 } // namespace Vida
