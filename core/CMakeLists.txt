@@ -3,6 +3,12 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_library(vida_core STATIC ${SOURCES})
 add_library(vida::core ALIAS vida_core)
 
+target_link_libraries(vida_core
+    PUBLIC
+        glm::glm
+        assimp
+)
+
 set_target_properties(vida_core PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/vida
 )

@@ -18,6 +18,8 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
+find_package(assimp REQUIRED)
+
 add_library(glad STATIC vendored/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendored/glad/include)
 

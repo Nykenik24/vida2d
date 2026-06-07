@@ -21,8 +21,10 @@ int main() {
     renderer.DrawCube({-5.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
                       Vida::ColorRGBA::Red, Vida::FX::Unlit);
 
+    Vida::FXParams lit_params;
+    lit_params.ambient = 0.25f;
     renderer.DrawCube({-3.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
-                      Vida::ColorRGBA::Blue, Vida::FX::Lit);
+                      Vida::ColorRGBA::Blue, Vida::FX::Lit, lit_params);
 
     renderer.DrawCube({-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
                       Vida::ColorRGBA::Green, Vida::FX::Outline);

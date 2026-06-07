@@ -9,8 +9,10 @@ Texture::Texture(const std::string &path) {
   stbi_set_flip_vertically_on_load(true);
 
   int channels;
-  unsigned char *data = stbi_load(path.c_str(), &width, &height, &channels, 4);
-  if (!data)
+  unsigned char *data = stbi_load(path.c_str(), &width, &height, &channels, 3);
+  printf("Texture loaded: %s channels=%d w=%d h=%d\n", path.c_str(), channels,
+         width, height);
+  if (!data || (width == 0 && height == 0) || channels < 0)
     throw std::runtime_error("Failed to load texture: " + path);
 
   glGenTextures(1, &handle);
@@ -21,7 +23,7 @@ Texture::Texture(const std::string &path) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
 

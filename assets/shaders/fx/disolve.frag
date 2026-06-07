@@ -4,7 +4,7 @@ in vec2 v_uv;
 uniform vec3 u_color;
 uniform float u_time;
 uniform sampler2D u_texture;
-uniform bool u_use_texture;
+uniform int u_use_texture;
 
 out vec4 frag_color;
 
@@ -13,7 +13,7 @@ float noise(vec2 p) {
 }
 
 void main() {
-    vec3 base = u_use_texture ? texture(u_texture, v_uv).rgb * u_color
+    vec3 base = u_use_texture == 1 ? texture(u_texture, v_uv).rgb * u_color
                               : u_color;
 
     float n = noise(v_uv);

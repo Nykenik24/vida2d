@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include "vida/core/Math.hpp"
+#include "vida/core/Model.hpp"
 #include "vida/renderer3d/Camera.hpp"
 #include "vida/renderer3d/FX.hpp"
 #include "vida/renderer3d/Shader.hpp"
@@ -33,6 +34,12 @@ public:
   void DrawMesh(const Mesh &mesh, const Mat4 &transform, ColorRGBA color,
                 const Texture *texture = nullptr, FX fx = FX::Unlit,
                 const FXParams &fx_params = FXParams{});
+
+  void DrawModel(const Model &model, ColorRGBA color, FX fx = FX::Unlit,
+                 const FXParams &params = FXParams{});
+  void DrawModel(const Model &model, const Texture &texture,
+                 ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
+                 const FXParams &params = FXParams{});
 
   void DrawCube(Vec3 position, Vec3 size, const Texture &texture,
                 ColorRGBA tint = ColorRGBA::White, FX fx = FX::Unlit,
@@ -80,7 +87,6 @@ private:
   Camera camera;
 
   std::unique_ptr<Shader> default_shader;
-  GLuint VAO, VBO;
 
   void InitBuffers();
 

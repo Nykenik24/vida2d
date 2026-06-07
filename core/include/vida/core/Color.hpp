@@ -11,7 +11,7 @@ public:
   ColorRGBA(Vec3 rgb) : r(rgb.x), g(rgb.y), b(rgb.z), a(255) {};
   ColorRGBA(Vec3 rgb, float a) : r(rgb.x), g(rgb.y), b(rgb.z), a(a) {};
 
-  ColorRGBA() : r(255), g(255), b(255), a(255) {};
+  ColorRGBA() : r(1.0f), g(1.0f), b(1.0f), a(1.0f) {};
 
   ColorRGBA(ColorRGBA &&) = default;
   ColorRGBA(const ColorRGBA &) = default;
@@ -19,14 +19,17 @@ public:
   ColorRGBA &operator=(const ColorRGBA &) = default;
   ~ColorRGBA() = default;
 
+  Vec3 ToVec3() const;
+  Vec4 ToVec4() const;
+
   float r, g, b, a;
 
-  static ColorRGBA Transparent;
-  static ColorRGBA White;
-  static ColorRGBA Black;
-  static ColorRGBA Red;
-  static ColorRGBA Green;
-  static ColorRGBA Blue;
+  static const ColorRGBA Transparent;
+  static const ColorRGBA White;
+  static const ColorRGBA Black;
+  static const ColorRGBA Red;
+  static const ColorRGBA Green;
+  static const ColorRGBA Blue;
   static const ColorRGBA Yellow;
   static const ColorRGBA Cyan;
 };

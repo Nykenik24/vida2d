@@ -5,7 +5,7 @@
 
 namespace Vida {
 
-class OBJLoader {
+class ModelLoader {
 public:
   static Mesh Load(const std::string &path);
 };
