@@ -1,20 +1,42 @@
 #include "vida/core/Color.hpp"
-#include "vida/renderer3d/Camera.hpp"
+#include "vida/renderer3d/FX.hpp"
 #include "vida/renderer3d/Renderer3D.hpp"
 #include "vida/window/Window.hpp"
 
 int main() {
-  Vida::Window window(800, 600, "Vida 2D");
+  Vida::Window window(1200, 600, "Vida FX Demo");
   Vida::Renderer3D renderer(window);
 
-  Vida::Camera &cam = renderer.GetCamera();
-  cam.Move({2, 0, 5});
-  cam.Point({1, 0, 0});
+  renderer.GetCamera().Move({0.0f, 2.0f, 8.0f});
+  renderer.GetCamera().Point({0.0f, 0.0f, 0.0f});
+
+  float dt = 0.016f;
 
   while (!window.ShouldClose()) {
     window.PollEvents();
-    renderer.Clear(Vida::ColorRGBA::Black);
-    renderer.DrawCube({0, 0, 0}, {1, 1, 1}, Vida::ColorRGBA::White);
+    renderer.Update(dt);
+
+    renderer.Clear(Vida::ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
+
+    renderer.DrawCube({-5.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA::Red, Vida::FX::Unlit);
+
+    renderer.DrawCube({-3.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA::Blue, Vida::FX::Lit);
+
+    renderer.DrawCube({-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA::Green, Vida::FX::Outline);
+
+    renderer.DrawCube({1.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA(1.0f, 1.0f, 1.0f, 0.5f),
+                      Vida::FX::Transparent);
+
+    renderer.DrawCube({3.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA::Yellow, Vida::FX::Pulse);
+
+    renderer.DrawCube({5.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f},
+                      Vida::ColorRGBA::Cyan, Vida::FX::Dissolve);
+
     renderer.Present();
   }
 }
