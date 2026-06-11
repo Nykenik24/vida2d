@@ -1,9 +1,15 @@
 [submodule "vendored/SDL"]
-	path = vendored/SDL
-	url = https://github.com/libsdl-org/SDL
-[submodule "vendored/clay"]
-	path = vendored/clay
-	url = https://github.com/nicbarker/clay
+  path = vendored/SDL
+  url = https://github.com/libsdl-org/SDL
 [submodule "vendored/luau"]
 	path = vendored/luau
 	url = https://github.com/luau-lang/luau
+[submodule "vendored/SDL3_ttf"]
+	path = vendored/SDL3_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "vendored/SDL3_image"]
+	path = vendored/SDL3_image
+	url = https://github.com/libsdl-org/SDL_image.git
+[submodule "vendored/imgui"]
+	path = vendored/imgui
+	url = https://github.com/ocornut/imgui
