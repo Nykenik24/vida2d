@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_sdlrenderer3.h"
+#include "vida/engine/ui/UI.hpp"
 // clang-format on
 
 namespace Vida {
@@ -23,6 +24,9 @@ Engine::Engine() {
 
   ImGui_ImplSDLRenderer3_Init(engine->renderer);
   ImGui_ImplSDL3_InitForSDLRenderer(engine->window, engine->renderer);
+
+  UI::InitStyle();
+  UI::InitFonts();
 
   running = true;
 }
