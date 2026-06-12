@@ -6,6 +6,10 @@
 #include "vida/logger.h"
 #include <cstdio>
 
+struct ClickButton {
+  int count;
+};
+
 int main(void) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("SDL_Init failed: %s", SDL_GetError());
@@ -20,12 +24,11 @@ int main(void) {
   auto sub = Vida::Event::Subscriber::make(bus);
   Vida::Event::Publisher pub(bus, "ButtonClicker");
 
-  sub->Sub("ButtonClicker");
-  sub->On("ClickButton", [] {
-    printf("Button Clicked!\n");
-    return true;
-  });
+  sub->Sub(pub);
+  sub->On<ClickButton>(
+      [](ClickButton ev) { printf("Button Clicked %d times!\n", ev.count); });
 
+  int click_count = 0;
   while (engine.Running()) {
     engine.PollEvents();
 
@@ -40,7 +43,8 @@ int main(void) {
     ImGui::SliderFloat("Value", &value, 0.0f, 1.0f);
 
     if (ImGui::Button("Click me")) {
-      pub.Emit("ClickButton");
+      click_count++;
+      pub.Emit(ClickButton{.count = click_count});
     }
 
     ImGui::End();
